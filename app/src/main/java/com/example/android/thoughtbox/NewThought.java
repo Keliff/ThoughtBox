@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 public class NewThought extends ActionBarActivity {
 
@@ -60,21 +61,20 @@ public class NewThought extends ActionBarActivity {
         EditText editText = (EditText) findViewById( R.id.new_thought_edit_text );
         // Get the string of the editText in question
         String string = editText.getText().toString();
-        // New output stream
-        FileOutputStream outputStream;
+        // Instantiating a thought to save
+        Thought thought = new Thought( string, "Shower" );
 
         try
         {
-            // Context.Mode_Private means that only the app that creates this on internal storage can read it
-            outputStream = openFileOutput( fileName, Context.MODE_PRIVATE );
-            // Writing the file to storage
-            outputStream.write( string.getBytes() );
-            // ALWAYS CLOSE THE FILE
-            outputStream.close();
+            FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+//            Log.e("NewThought", getFilesDir().toString());
+            ObjectOutputStream oos = new ObjectOutputStream( fos );
+            oos.writeObject( thought );
+            oos.close();
+            fos.close();
         } catch ( Exception e )
         {
             Log.e("SaveThought", "Error when saving the new thought to internal storage.");
-            // Error when creating the file
         }
 
         ReturnToMain( (Button)findViewById( R.id.new_thought_save_button ) );
